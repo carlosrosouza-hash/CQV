@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Qualidade por Variáveis — Metrologia Industrial</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --surface: #ffffff;
+    --surface2: #edf0f8;
+    --border: #c8cee6;
+    --text: #181b2e;
+    --text-muted: #424878;
+    --text-dim: #8890b8;
+    --accent: #0078b8;
+    --accent2: #4e55cc;
+    --green: #12905a;
+    --yellow: #a07000;
+    --orange: #b85000;
+    --red: #c01840;
+    --green-dim: rgba(18,144,90,0.10);
+    --yellow-dim: rgba(160,112,0,0.10);
+    --orange-dim: rgba(184,80,0,0.10);
+    --red-dim: rgba(192,24,64,0.10);
+    --accent-dim: rgba(0,120,184,0.09);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+
+  header h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(15px, 2.5vw, 18px);
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .badge-col {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .badge {
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,120,184,0.3);
+    color: var(--accent);
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .badge-prof {
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; padding: 20px 16px 60px; }
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin: 18px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  /* ── COMPUTED DISPLAY ── */
+  .computed-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .computed-box {
+    background: rgba(78,85,204,0.07);
+    border: 1px solid rgba(78,85,204,0.22);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+
+  .computed-box-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 4px;
+  }
+
+  .computed-box-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .computed-u-row {
+    background: rgba(0,120,184,0.06);
+    border: 1px solid rgba(0,120,184,0.2);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .computed-u-row .computed-box-label { margin-bottom: 0; }
+  .computed-u-row .computed-box-value { color: var(--accent); }
+
+  /* ── INPUTS ── */
+  .field-group { margin-bottom: 12px; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .input-row input { flex: 1; }
+
+  .unit-select { width: 90px; flex-shrink: 0; }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    padding: 11px 13px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,120,184,0.14);
+  }
+
+  input::placeholder { color: var(--text-dim); }
+  select option { background: var(--surface2); }
+
+  .separator {
+    height: 1px;
+    background: var(--border);
+    margin: 18px 0;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  button {
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 12px 20px;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #ffffff;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,120,184,0.28);
+  }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  /* ── EXAMPLES ── */
+  .examples-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .example-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 10px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .example-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  /* ── RIGHT COLUMN ── */
+  .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color 0.4s;
+  }
+
+  .result-card.aceito    { border-color: var(--green); }
+  .result-card.conforme  { border-color: var(--yellow); }
+  .result-card.risco     { border-color: var(--orange); }
+  .result-card.rejeitado { border-color: var(--red); }
+
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 30px;
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+
+  .result-badge.aceito    { background: var(--green-dim); color: var(--green); border: 1px solid rgba(18,144,90,0.35); }
+  .result-badge.conforme  { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(160,112,0,0.35); }
+  .result-badge.risco     { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(184,80,0,0.35); }
+  .result-badge.rejeitado { background: var(--red-dim); color: var(--red); border: 1px solid rgba(192,24,64,0.35); }
+
+  .result-explanation {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .result-explanation strong { color: var(--text); }
+
+  .result-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .metric {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .metric-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── CHART CARD ── */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  canvas#chart {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    display: block;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── CONCEPTS SECTION ── */
+  .concepts-section {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+  }
+
+  .concepts-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .concepts-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 14px;
+    background: var(--accent2);
+    border-radius: 2px;
+  }
+
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .concept-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+
+  .concept-item:hover { border-color: var(--accent2); }
+
+  .concept-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 7px;
+    letter-spacing: 0.2px;
+  }
+
+  .concept-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* ── PLACEHOLDER ── */
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .placeholder svg { opacity: 0.3; }
+  .placeholder p { font-size: 15px; }
+
+  /* ── RISK ROW ── */
+  .risk-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .risk-item {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .risk-item-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .risk-item-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* live-update highlight */
+  @keyframes highlight {
+    0%   { background: rgba(124,131,253,0.3); }
+    100% { background: rgba(124,131,253,0.08); }
+  }
+  .highlight-anim { animation: highlight 0.5s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">📐</div>
+  <div>
+    <h1>Controle de Qualidade por Variáveis</h1>
+    <p>Metrologia Industrial — Análise de Conformidade e Incerteza de Medição</p>
+  </div>
+  <div class="badge-col">
+    <span class="badge">DIDÁTICO</span>
+    <span class="badge-prof">Prof. Carlos Souza</span>
+  </div>
+</header>
+
+<main>
+  <!-- ── LEFT: INPUTS ── -->
+  <aside>
+    <div class="card">
+      <div class="card-title">Parâmetros de entrada</div>
+
+      <!-- ESPECIFICAÇÃO -->
+      <div class="section-label">📐 Especificação</div>
+
+      <div class="field-group">
+        <label>Valor Nominal (VN)</label>
+        <div class="input-row">
+          <input id="vn" type="number" step="any" placeholder="ex: 50.000" oninput="atualizarLimites()">
+          <select id="unit" class="unit-select" onchange="atualizarLimites(); atualizarU(); atualizarVmUc()">
+            <option value="mm">mm</option>
+            <option value="cm">cm</option>
+            <option value="m">m</option>
+            <option value="μm">μm</option>
+            <option value="g">g</option>
+            <option value="kg">kg</option>
+            <option value="°C">°C</option>
+            <option value="N">N</option>
+            <option value="kN">kN</option>
+            <option value="MPa">MPa</option>
+            <option value="">—</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Tolerância exigida (±T)</label>
+        <input id="tol" type="number" step="any" min="0" placeholder="ex: 0.050  →  VN ± T" oninput="atualizarLimites()">
+      </div>
+
+      <!-- Especificação VN ± T -->
+      <div class="computed-u-row" id="specDisplay" style="margin-bottom:8px">
+        <div>
+          <div class="computed-box-label">Especificação  VN ± T</div>
+        </div>
+        <div class="computed-box-value" id="specMostrado" style="color:var(--accent2)">—</div>
+      </div>
+
+      <!-- LIE / LSE calculados -->
+      <div class="computed-row" id="limiteDisplay">
+        <div class="computed-box">
+          <div class="computed-box-label">LIE = VN − T</div>
+          <div class="computed-box-value" id="lieMostrado">—</div>
+        </div>
+        <div class="computed-box">
+          <div class="computed-box-label">LSE = VN + T</div>
+          <div class="computed-box-value" id="lseMostrado">—</div>
+        </div>
+      </div>
+
+      <!-- MEDIÇÃO -->
+      <div class="section-label">🔬 Medição</div>
+
+      <div class="field-group">
+        <label>Valor Medido (VM)</label>
+        <input id="vm" type="number" step="any" placeholder="ex: 50.010" oninput="atualizarVmUc()">
+      </div>
+
+      <div class="field-group">
+        <label>Incerteza Padrão (u<sub style="font-size:10px">c</sub>)</label>
+        <input id="uc" type="number" step="any" min="0" placeholder="ex: 0.010" oninput="atualizarU(); atualizarVmUc()">
+      </div>
+
+      <!-- VM ± uc display -->
+      <div class="computed-u-row" id="vmUcDisplay" style="margin-bottom:8px">
+        <div>
+          <div class="computed-box-label">Medição  VM ± u<sub style="font-size:9px">c</sub></div>
+        </div>
+        <div class="computed-box-value" id="vmUcMostrado">—</div>
+      </div>
+
+      <div class="field-group">
+        <label>Fator de Abrangência (k) — Confiança: <span id="kConfianca" style="color:var(--green);font-family:'Space Mono',monospace">~95,5%</span></label>
+        <input id="k" type="number" step="any" min="1" value="2" placeholder="padrão: 2" oninput="atualizarU()">
+      </div>
+
+      <!-- U calculado -->
+      <div class="computed-u-row" id="uDisplay">
+        <div>
+          <div class="computed-box-label">Incerteza Expandida  U = k × u<sub style="font-size:9px">c</sub></div>
+        </div>
+        <div class="computed-box-value" id="uMostrado">—</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="calcular()">▶ Calcular decisão</button>
+        <button class="btn-ghost" onclick="limpar()" title="Limpar">✕ Limpar</button>
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="examples-label">Exemplos pré-carregados</div>
+      <div class="examples-grid">
+        <button class="example-btn" onclick="carregarExemplo(0)">✅ Peça Aceita</button>
+        <button class="example-btn" onclick="carregarExemplo(1)">⚠️ Zona de Risco</button>
+        <button class="example-btn" onclick="carregarExemplo(2)">🔶 Conforme s/ Aceitar</button>
+        <button class="example-btn" onclick="carregarExemplo(3)">❌ Peça Rejeitada</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── RIGHT: OUTPUTS ── -->
+  <div class="right-col">
+
+    <!-- Result -->
+    <div class="result-card" id="resultCard">
+      <div id="resultContent">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <rect x="8" y="20" width="32" height="8" rx="4" fill="currentColor"/>
+            <circle cx="24" cy="24" r="4" fill="#f4f6fb"/>
+            <rect x="22" y="8" width="4" height="8" rx="2" fill="currentColor"/>
+            <rect x="22" y="32" width="4" height="8" rx="2" fill="currentColor"/>
+          </svg>
+          <p>Preencha os campos e clique em <strong>Calcular decisão</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <div class="card-title">Visualização gráfica</div>
+      <canvas id="chart" height="200"></canvas>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(192,24,64,0.12);border:1.5px solid #c01840;"></span>Zona de rejeição</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(160,112,0,0.12);border:1.5px solid #a07000;"></span>Zona de risco / conformidade</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(18,144,90,0.12);border:1.5px solid #12905a;"></span>Zona de aceitação</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#0078b8;border-radius:50%;"></span>VM ± U</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONCEPTS ── -->
+  <div class="concepts-section">
+    <div class="concepts-title">Conceitos fundamentais de metrologia</div>
+    <div class="concepts-grid">
+      <div class="concept-item">
+        <div class="concept-name">📏 Tolerância Dimensional</div>
+        <div class="concept-desc">Variação máxima permitida de uma característica em relação ao valor nominal, definida em projeto. É a diferença entre LSE e LIE (= 2T para tolerância simétrica).</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">⬇ Limite Inferior de Especificação (LIE)</div>
+        <div class="concept-desc">Menor valor aceitável pelo projeto para uma característica dimensional. Calculado como VN − T. Valores abaixo deste limite são não conformes.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">⬆ Limite Superior de Especificação (LSE)</div>
+        <div class="concept-desc">Maior valor aceitável pelo projeto para uma característica dimensional. Calculado como VN + T. Valores acima deste limite são não conformes.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">🎯 Valor Nominal (VN)</div>
+        <div class="concept-desc">Valor de referência ideal especificado em projeto, em torno do qual a tolerância é definida. Ex: diâmetro de 50,000 mm.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">±U Incerteza de Medição</div>
+        <div class="concept-desc">A incerteza padrão (u_c) representa a dispersão dos valores medidos. A incerteza expandida U = k × u_c define o intervalo de confiança do resultado, conforme o Guia GUM.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">🔢 Fator de Abrangência (k)</div>
+        <div class="concept-desc">Multiplicador que define o nível de confiança da incerteza expandida. k = 2 corresponde a ~95% de confiança (distribuição normal); k = 3 corresponde a ~99,7%.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">✅ Zona de Conformidade</div>
+        <div class="concept-desc">Faixa entre LIE e LSE na qual o produto atende ao requisito de projeto. Peças com valor medido dentro desta faixa são conformes.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">🟢 Zona de Aceitação</div>
+        <div class="concept-desc">Faixa reduzida pela incerteza: de (LIE + U) até (LSE − U). Produtos com VM nesta faixa têm o intervalo de incerteza completamente dentro da especificação.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">⚠️ Risco de Falsa Aceitação</div>
+        <div class="concept-desc">Probabilidade de aceitar um produto não conforme. Ocorre quando VM está dentro da especificação, mas a incerteza permite que o valor real esteja fora. Zona de risco próxima a LIE ou LSE.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">🔶 Risco de Falsa Rejeição</div>
+        <div class="concept-desc">Probabilidade de rejeitar um produto conforme. A incerteza pode levar à reprovação de uma peça cujo valor real estaria dentro da especificação.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function confidenceFromK(k) {
+  const erf = x => {
+    const sign = x >= 0 ? 1 : -1;
+    x = Math.abs(x);
+    const t = 1 / (1 + 0.3275911 * x);
+    const y = 1 - (((((1.061405429*t - 1.453152027)*t + 1.421413741)*t - 0.284496736)*t + 0.254829592)*t) * Math.exp(-x*x);
+    return sign * y;
+  };
+  return (erf(k / Math.sqrt(2)) * 100).toFixed(1).replace('.', ',');
+}
+
+// ── EXEMPLOS PRÉ-CARREGADOS (agora com VN + tolerância + uc + k) ──
+const exemplos = [
+  { vn:50.000, tol:0.050, vm:50.010, uc:0.0075, k:2, unit:'mm' },
+  { vn:50.000, tol:0.050, vm:50.038, uc:0.010,  k:2, unit:'mm' },
+  { vn:50.000, tol:0.050, vm:50.040, uc:0.010,  k:2, unit:'mm' },
+  { vn:50.000, tol:0.050, vm:50.060, uc:0.005,  k:2, unit:'mm' },
+];
+
+function carregarExemplo(i) {
+  const e = exemplos[i];
+  document.getElementById('vn').value   = e.vn;
+  document.getElementById('tol').value  = e.tol;
+  document.getElementById('vm').value   = e.vm;
+  document.getElementById('uc').value   = e.uc;
+  document.getElementById('k').value    = e.k;
+  document.getElementById('unit').value = e.unit;
+  atualizarLimites();
+  atualizarU();
+  atualizarVmUc();
+  calcular();
+}
+
+// Atualiza os displays de LIE/LSE em tempo real
+function atualizarLimites() {
+  const vn  = parseFloat(document.getElementById('vn').value);
+  const tol = parseFloat(document.getElementById('tol').value);
+  const unit = document.getElementById('unit').value;
+
+  const lieEl  = document.getElementById('lieMostrado');
+  const lseEl  = document.getElementById('lseMostrado');
+  const specEl = document.getElementById('specMostrado');
+
+  if (!isNaN(vn) && !isNaN(tol) && tol >= 0) {
+    const lie = vn - tol;
+    const lse = vn + tol;
+    lieEl.textContent  = fmt(lie, unit);
+    lseEl.textContent  = fmt(lse, unit);
+    specEl.textContent = fmt(vn, '') + ' ± ' + fmt(tol, unit);
+    pulsar('limiteDisplay');
+    pulsar('specDisplay');
+  } else {
+    lieEl.textContent  = '—';
+    lseEl.textContent  = '—';
+    specEl.textContent = '—';
+  }
+}
+
+// Atualiza U = k × uc em tempo real
+function atualizarU() {
+  const uc = parseFloat(document.getElementById('uc').value);
+  const k  = parseFloat(document.getElementById('k').value) || 2;
+  const unit = document.getElementById('unit').value;
+  const uEl     = document.getElementById('uMostrado');
+  const kConfEl = document.getElementById('kConfianca');
+
+  if (!isNaN(k) && k > 0) {
+    kConfEl.textContent = '~' + confidenceFromK(k) + '%';
+  }
+
+  if (!isNaN(uc) && uc >= 0) {
+    const u = k * uc;
+    uEl.textContent = '± ' + fmt(u, unit);
+    pulsar('uDisplay');
+  } else {
+    uEl.textContent = '—';
+  }
+}
+
+function atualizarVmUc() {
+  const vm   = parseFloat(document.getElementById('vm').value);
+  const uc   = parseFloat(document.getElementById('uc').value);
+  const unit = document.getElementById('unit').value;
+  const el   = document.getElementById('vmUcMostrado');
+
+  if (!isNaN(vm) && !isNaN(uc) && uc >= 0) {
+    el.textContent = fmt(vm, '') + ' ± ' + fmt(uc, unit);
+    pulsar('vmUcDisplay');
+  } else if (!isNaN(vm)) {
+    el.textContent = fmt(vm, unit);
+  } else {
+    el.textContent = '—';
+  }
+}
+
+function pulsar(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('highlight-anim');
+  void el.offsetWidth;
+  el.classList.add('highlight-anim');
+}
+
+function limpar() {
+  ['vn','tol','vm','uc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('k').value    = '2';
+  document.getElementById('unit').value = 'mm';
+  document.getElementById('lieMostrado').textContent  = '—';
+  document.getElementById('lseMostrado').textContent  = '—';
+  document.getElementById('specMostrado').textContent = '—';
+  document.getElementById('vmUcMostrado').textContent = '—';
+  document.getElementById('uMostrado').textContent    = '—';
+  document.getElementById('kConfianca').textContent   = '~95,5%';
+  document.getElementById('resultCard').className = 'result-card';
+  document.getElementById('resultContent').innerHTML = `
+    <div class="placeholder">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <rect x="8" y="20" width="32" height="8" rx="4" fill="currentColor"/>
+        <circle cx="24" cy="24" r="4" fill="#f4f6fb"/>
+        <rect x="22" y="8" width="4" height="8" rx="2" fill="currentColor"/>
+        <rect x="22" y="32" width="4" height="8" rx="2" fill="currentColor"/>
+      </svg>
+      <p>Preencha os campos e clique em <strong>Calcular decisão</strong></p>
+    </div>`;
+  desenharGraficoVazio();
+}
+
+function calcular() {
+  const vn   = parseFloat(document.getElementById('vn').value);
+  const tol  = parseFloat(document.getElementById('tol').value);
+  const vm   = parseFloat(document.getElementById('vm').value);
+  const uc   = parseFloat(document.getElementById('uc').value);
+  const k    = parseFloat(document.getElementById('k').value) || 2;
+  const unit = document.getElementById('unit').value;
+
+  // Derivados
+  const lie = vn - tol;
+  const lse = vn + tol;
+  const u   = k * uc;
+
+  if ([tol, vm, uc].some(isNaN) || isNaN(vn)) {
+    alert('Por favor, preencha: Valor Nominal, Tolerância, Valor Medido e Incerteza Padrão.');
+    return;
+  }
+
+  if (tol <= 0) { alert('A tolerância T deve ser maior que zero.'); return; }
+  if (uc < 0)   { alert('A incerteza padrão u_c deve ser positiva.'); return; }
+
+  const lia  = lie + u;
+  const lsa  = lse - u;
+  const vmMin = vm - u;
+  const vmMax = vm + u;
+
+  const conformeMin = vm >= lie;
+  const conformeMax = vm <= lse;
+  const conforme = conformeMin && conformeMax;
+  const aceito   = conforme && vm >= lia && vm <= lsa && lia < lsa;
+  const riscoBaixo = (vm >= lie && vm < lia) || (vm > lsa && vm <= lse);
+  const riscoU = (vmMin < lie && vm >= lie) || (vmMax > lse && vm <= lse);
+
+  let decisao, classe, emoji, explicacao;
+
+  if (!conforme) {
+    decisao = 'REJEITADO';
+    classe  = 'rejeitado';
+    emoji   = '❌';
+    if (!conformeMin) {
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está abaixo do limite inferior de especificação
+        (<strong>LIE = ${fmt(lie, unit)}</strong>). A peça está <strong>fora da tolerância de projeto</strong>
+        e deve ser rejeitada. Desvio: ${fmt(Math.abs(vm - lie), unit)} abaixo do LIE.`;
+    } else {
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está acima do limite superior de especificação
+        (<strong>LSE = ${fmt(lse, unit)}</strong>). A peça está <strong>fora da tolerância de projeto</strong>
+        e deve ser rejeitada. Desvio: ${fmt(Math.abs(vm - lse), unit)} acima do LSE.`;
+    }
+  } else if (aceito) {
+    decisao = 'ACEITO';
+    classe  = 'aceito';
+    emoji   = '✅';
+    explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está dentro da <strong>zona de aceitação</strong>
+      [${fmt(lia, unit)} ; ${fmt(lsa, unit)}]. O intervalo de incerteza
+      [${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}] está <em>completamente</em> dentro dos limites de especificação.
+      A peça está <strong>aprovada com segurança metrológica</strong>.`;
+  } else if (lia > lsa) {
+    decisao = 'ZONA DE RISCO';
+    classe  = 'risco';
+    emoji   = '⚠️';
+    explicacao = `A incerteza expandida U = <strong>${fmt(u, unit)}</strong> é maior que a metade da tolerância,
+      tornando a zona de aceitação inexistente (LIA &gt; LSA). O instrumento de medição
+      <strong>não possui resolução adequada</strong> para avaliar esta característica com segurança.
+      Recomenda-se um instrumento com menor incerteza.`;
+  } else {
+    const tocaMin = vmMin < lie;
+    const tocaMax = vmMax > lse;
+    if (riscoBaixo || riscoU) {
+      decisao = 'ZONA DE RISCO';
+      classe  = 'risco';
+      emoji   = '⚠️';
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está dentro da tolerância do projeto,
+        porém o intervalo de incerteza [${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}]
+        ${tocaMin ? 'ultrapassa o <strong>LIE</strong>' : ''}${tocaMin && tocaMax ? ' e ' : ''}${tocaMax ? 'ultrapassa o <strong>LSE</strong>' : ''}.
+        Existe <strong>risco de falsa aceitação</strong>: o valor real da peça pode estar fora da especificação.
+        A decisão de aceitar ou rejeitar é <strong>metrológicamente incerta</strong>.`;
+    } else {
+      decisao = 'CONFORME, MAS NÃO ACEITO';
+      classe  = 'conforme';
+      emoji   = '🔶';
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está dentro da tolerância do projeto
+        [${fmt(lie, unit)} ; ${fmt(lse, unit)}], mas fora da zona de aceitação
+        [${fmt(lia, unit)} ; ${fmt(lsa, unit)}]. O intervalo de incerteza
+        [${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}] toca ou ultrapassa uma das bordas da especificação.
+        A peça é <strong>conforme ao projeto</strong>, mas a incerteza de medição
+        <strong>não permite confirmar a aceitação com segurança</strong>.`;
+    }
+  }
+
+  const card = document.getElementById('resultCard');
+  card.className = `result-card ${classe} fade-in`;
+
+  const totalTol = lse - lie;
+  const razaoU = ((u / (totalTol / 2)) * 100).toFixed(1);
+
+  document.getElementById('resultContent').innerHTML = `
+    <div class="fade-in">
+      <div class="result-badge ${classe}">${emoji} ${decisao}</div>
+      <p class="result-explanation">${explicacao}</p>
+      <div class="result-metrics">
+        <div class="metric">
+          <div class="metric-label">VN</div>
+          <div class="metric-value">${fmt(vn, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Tolerância ±T</div>
+          <div class="metric-value">± ${fmt(tol, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Incert. padrão u_c</div>
+          <div class="metric-value">${fmt(uc, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Fator k</div>
+          <div class="metric-value">${k}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">U = k·u_c</div>
+          <div class="metric-value">± ${fmt(u, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">U / (T)</div>
+          <div class="metric-value">${razaoU}%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">L. Aceit. Inf. (LIA)</div>
+          <div class="metric-value">${fmt(lia, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">L. Aceit. Sup. (LSA)</div>
+          <div class="metric-value">${fmt(lsa, unit)}</div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div class="risk-item">
+          <div class="risk-item-label">Intervalo de incerteza</div>
+          <div class="risk-item-val" style="color:var(--accent)">[${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}]</div>
+        </div>
+        <div class="risk-item">
+          <div class="risk-item-label">VM dentro da especificação?</div>
+          <div class="risk-item-val" style="color:${conforme ? 'var(--green)' : 'var(--red)'}">${conforme ? '✔ Sim' : '✘ Não'}</div>
+        </div>
+      </div>
+    </div>`;
+
+  desenharGrafico({ lie, lse, lia, lsa, vm, u, unit, vn, classe });
+}
+
+function fmt(val, unit) {
+  if (isNaN(val)) return '—';
+  const abs = Math.abs(val);
+  const decimals = abs < 10 ? 4 : abs < 100 ? 3 : 2;
+  return val.toFixed(decimals) + (unit ? ' ' + unit : '');
+}
+
+// ── CANVAS CHART ──
+let _lastChartData = null;
+
+function resolveCanvasWidth(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  return Math.max(rect.width || canvas.parentElement.clientWidth - 48, 200);
+}
+
+function desenharGraficoVazio() {
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = resolveCanvasWidth(canvas);
+  canvas.width  = W * dpr;
+  canvas.height = 200 * dpr;
+  ctx.scale(dpr, dpr);
+  const H = 200;
+  ctx.fillStyle = '#f4f6fb';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#8890b8';
+  ctx.font = '15px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('O gráfico aparecerá após o cálculo', W / 2, H / 2);
+}
+
+function desenharGrafico({ lie, lse, lia, lsa, vm, u, unit, vn, classe }) {
+  _lastChartData = { lie, lse, lia, lsa, vm, u, unit, vn, classe };
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = resolveCanvasWidth(canvas);
+  canvas.width  = W * dpr;
+  canvas.height = 220 * dpr;
+  ctx.scale(dpr, dpr);
+  const H = 220;
+
+  const mx = 20, my = 36, bw = W - mx * 2, bh = 60, by = my + 30;
+
+  const padding = Math.max((lse - lie) * 0.5, u * 3, 0.01);
+  const rMin = Math.min(lie, vm - u) - padding;
+  const rMax = Math.max(lse, vm + u) + padding;
+  const range = rMax - rMin;
+
+  const toX = v => mx + ((v - rMin) / range) * bw;
+
+  ctx.fillStyle = '#f4f6fb';
+  ctx.fillRect(0, 0, W, H);
+
+  const lieX = toX(lie);
+  const lseX = toX(lse);
+  const liaX = toX(Math.max(lia, lie));
+  const lsaX = toX(Math.min(lsa, lse));
+
+  // Red reject zones
+  ctx.fillStyle = 'rgba(192,24,64,0.14)';
+  ctx.fillRect(mx, by, lieX - mx, bh);
+  ctx.fillRect(lseX, by, mx + bw - lseX, bh);
+
+  // Yellow risk zones
+  if (liaX > lieX) {
+    ctx.fillStyle = 'rgba(160,112,0,0.14)';
+    ctx.fillRect(lieX, by, liaX - lieX, bh);
+  }
+  if (lsaX < lseX) {
+    ctx.fillStyle = 'rgba(160,112,0,0.14)';
+    ctx.fillRect(lsaX, by, lseX - lsaX, bh);
+  }
+
+  // Green acceptance
+  if (lsaX > liaX) {
+    ctx.fillStyle = 'rgba(18,144,90,0.14)';
+    ctx.fillRect(liaX, by, lsaX - liaX, bh);
+  }
+
+  ctx.strokeStyle = '#c8cee6';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(mx, by, bw, bh);
+
+  const drawVLine = (x, color, dash, label, labelY, side = 'center') => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    ctx.moveTo(x, by - 4);
+    ctx.lineTo(x, by + bh + 4);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.font = 'bold 11px Space Mono, monospace';
+    ctx.fillStyle = color;
+    ctx.textAlign = side === 'left' ? 'left' : side === 'right' ? 'right' : 'center';
+    const lx = side === 'left' ? x + 3 : side === 'right' ? x - 3 : x;
+    ctx.fillText(label, lx, labelY);
+  };
+
+  drawVLine(lieX, '#c01840', [],     'LIE', by - 8,        'right');
+  drawVLine(lseX, '#c01840', [],     'LSE', by - 8,        'left');
+
+  if (lsa > lia) {
+    drawVLine(liaX, '#12905a', [4,3], 'LIA', by + bh + 14, 'right');
+    drawVLine(lsaX, '#12905a', [4,3], 'LSA', by + bh + 14, 'left');
+  }
+
+  // VN line
+  if (!isNaN(vn)) {
+    const vnX = toX(vn);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(78,85,204,0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([2, 4]);
+    ctx.beginPath(); ctx.moveTo(vnX, by); ctx.lineTo(vnX, by + bh); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.font = 'bold 10px Space Mono, monospace';
+    ctx.fillStyle = '#4e55cc';
+    ctx.textAlign = 'center';
+    ctx.fillText('VN', vnX, by + bh + 26);
+  }
+
+  // Uncertainty band
+  const vmX    = toX(vm);
+  const vmMinX = toX(vm - u);
+  const vmMaxX = toX(vm + u);
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,120,184,0.12)';
+  const bandY = by + bh * 0.15, bandH = bh * 0.7, r = 4;
+  const bx2 = vmMinX, bw2 = vmMaxX - vmMinX;
+  ctx.beginPath();
+  ctx.moveTo(bx2 + r, bandY);
+  ctx.lineTo(bx2 + bw2 - r, bandY);
+  ctx.quadraticCurveTo(bx2 + bw2, bandY, bx2 + bw2, bandY + r);
+  ctx.lineTo(bx2 + bw2, bandY + bandH - r);
+  ctx.quadraticCurveTo(bx2 + bw2, bandY + bandH, bx2 + bw2 - r, bandY + bandH);
+  ctx.lineTo(bx2 + r, bandY + bandH);
+  ctx.quadraticCurveTo(bx2, bandY + bandH, bx2, bandY + bandH - r);
+  ctx.lineTo(bx2, bandY + r);
+  ctx.quadraticCurveTo(bx2, bandY, bx2 + r, bandY);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,120,184,0.4)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.restore();
+
+  // VM point
+  const vmCy = by + bh / 2;
+  ctx.beginPath();
+  ctx.arc(vmX, vmCy, 7, 0, Math.PI * 2);
+  const colorMap = { aceito:'#12905a', conforme:'#a07000', risco:'#b85000', rejeitado:'#c01840' };
+  ctx.fillStyle = colorMap[classe] || '#0078b8';
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.font = 'bold 11px Space Mono, monospace';
+  ctx.fillStyle = colorMap[classe] || '#0078b8';
+  ctx.textAlign = 'center';
+  ctx.fillText('VM', vmX, by - 8);
+
+  // X axis ticks
+  const tickVals = [lie, lse, vm, vm - u, vm + u];
+  if (!isNaN(vn)) tickVals.push(vn);
+  const uniqueTicks = [...new Set(tickVals.map(v => v.toFixed(6)))].map(Number);
+  ctx.font = '11px Space Mono, monospace';
+  ctx.fillStyle = '#424878';
+  uniqueTicks.forEach(v => {
+    const tx = toX(v);
+    ctx.textAlign = 'center';
+    const decimals = range < 0.5 ? 4 : range < 5 ? 3 : 2;
+    ctx.fillText(v.toFixed(decimals), tx, by + bh + 38);
+  });
+
+  ctx.font = 'bold 11px DM Sans, sans-serif';
+  ctx.fillStyle = '#8890b8';
+  ctx.textAlign = 'right';
+  ctx.fillText(unit, mx + bw, by + bh + 38);
+
+  ctx.font = 'bold 12px Space Mono, monospace';
+  ctx.fillStyle = '#0078b8';
+  ctx.textAlign = 'left';
+  ctx.fillText('ESCALA DE MEDIÇÃO', mx, my - 2);
+}
+
+window.addEventListener('load', () => setTimeout(desenharGraficoVazio, 100));
+window.addEventListener('resize', () => {
+  if (_lastChartData) desenharGrafico(_lastChartData);
+  else desenharGraficoVazio();
+});
+</script>
+</body>
+</html>
