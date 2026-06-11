@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CQV — Metrologia Industrial v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050709;
+    --surface: #090c13;
+    --surface2: #0d1020;
+    --surface3: #111526;
+    --border: #161d2e;
+    --border-bright: #22304a;
+    --text: #d8e2f4;
+    --text-muted: #8a9ec0;
+    --text-dim: #2e3f5c;
+    --accent: #22d3ee;
+    --accent2: #818cf8;
+    --accent-dim: rgba(34,211,238,0.07);
+    --accent2-dim: rgba(129,140,248,0.08);
+    --green:  #34d399;
+    --yellow: #fbbf24;
+    --orange: #f97316;
+    --red:    #f43f5e;
+    --green-dim:  rgba(52,211,153,0.1);
+    --yellow-dim: rgba(251,191,36,0.1);
+    --orange-dim: rgba(249,115,22,0.1);
+    --red-dim:    rgba(244,63,94,0.1);
+    --radius: 0px;
+    --radius-sm: 0px;
+  }
+
+  /* ── LIGHT MODE: fundo mais escuro / cinza-azulado ── */
+  body.light-mode {
+    --bg: #d4dbe8;
+    --surface: #e0e7f4;
+    --surface2: #cdd5e6;
+    --surface3: #c2ccde;
+    --border: #aab6ce;
+    --border-bright: #7a8faf;
+    --text: #111828;
+    --text-muted: #3d5070;
+    --text-dim: #7e90aa;
+    --accent: #0369a1;
+    --accent2: #4338ca;
+    --accent-dim: rgba(3,105,161,0.12);
+    --accent2-dim: rgba(67,56,202,0.12);
+    --green-dim:  rgba(52,211,153,0.15);
+    --yellow-dim: rgba(251,191,36,0.15);
+    --orange-dim: rgba(249,115,22,0.15);
+    --red-dim:    rgba(244,63,94,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    font-size: 21px;
+    background-image:
+      linear-gradient(rgba(22,29,46,0.7) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22,29,46,0.7) 1px, transparent 1px);
+    background-size: 44px 44px;
+    background-attachment: fixed;
+  }
+
+  body.light-mode {
+    background-image:
+      linear-gradient(rgba(170,182,206,0.55) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(170,182,206,0.55) 1px, transparent 1px);
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: rgba(5,7,9,0.94);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(24px);
+  }
+
+  body.light-mode header {
+    background: rgba(212,219,232,0.95);
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .logo-icon-wrap {
+    width: 34px; height: 34px;
+    border: 1.5px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-dim);
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+    flex-shrink: 0;
+  }
+
+  .logo-icon-wrap svg {
+    width: 16px; height: 16px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .logo-text-wrap { display: flex; flex-direction: column; gap: 0; }
+
+  .logo-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 25px;
+    letter-spacing: 3px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .logo-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .logo-prof {
+    display: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px; font-weight: 500; font-style: italic;
+    color: var(--text-muted); letter-spacing: 0.5px;
+    line-height: 1.3;
+  }
+
+  .header-sep {
+    width: 1px; height: 26px;
+    background: var(--border-bright);
+    flex-shrink: 0;
+  }
+
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(34,211,238,0.2);
+    padding: 3px 9px;
+    clip-path: polygon(5px 0%, 100% 0%, calc(100% - 5px) 100%, 0% 100%);
+  }
+
+  .header-right {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .professor-tag {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .btn-theme {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-theme:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  /* ── MOBILE: titulo + subtítulo + professor empilhados ── */
+  @media (max-width: 600px) {
+    header { padding: 0 14px; gap: 10px; }
+    .header-sep    { display: none; }
+    .header-tag    { display: none; }
+    .professor-tag { display: none; }
+    .logo-title    { font-size: 18px; letter-spacing: 1.5px; }
+    .logo-sub      { font-size: 10.5px; letter-spacing: 1.2px; }
+    .logo-prof     { display: block; }
+  }
+
+  /* ─── LAYOUT ─── */
+  main {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    display: grid;
+    grid-template-columns: 355px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    main { grid-template-columns: 1fr; padding: 18px 14px 60px; }
+  }
+
+  /* ─── PANEL / CARD ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 13px; height: 13px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 13px; height: 13px;
+    border-bottom: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+  }
+
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '//';
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.35;
+    font-size: 14px;
+  }
+
+  /* ─── SECTION LABELS ─── */
+  .section-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin: 16px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  /* ─── COMPUTED DISPLAY ─── */
+  .computed-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .computed-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid rgba(129,140,248,0.35);
+    padding: 8px 10px;
+  }
+
+  .computed-box-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 2px;
+  }
+
+  .computed-box-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .computed-u-row {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid rgba(34,211,238,0.35);
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .computed-u-row .computed-box-label { margin-bottom: 0; }
+  .computed-u-row .computed-box-value { color: var(--accent); font-size: 18px; }
+
+  /* ─── INPUTS ─── */
+  .field-group { margin-bottom: 10px; }
+
+  label {
+    display: block;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .input-row { display: flex; gap: 6px; }
+  .input-row input { flex: 1; }
+  .unit-select { width: 80px; flex-shrink: 0; }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom: 2px solid var(--border-bright);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--border-bright);
+    border-bottom-color: var(--accent);
+    box-shadow: 0 3px 0 -1px rgba(34,211,238,0.15);
+    background: var(--surface3);
+  }
+
+  input::placeholder { color: var(--text-dim); font-style: italic; }
+  select option { background: var(--surface2); color: var(--text); }
+
+  .separator {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn-row { display: flex; gap: 8px; margin-top: 16px; }
+
+  button {
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    border: none;
+    padding: 10px 16px;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+    border-radius: 0;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #05070a;
+    flex: 1;
+    justify-content: center;
+    clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  }
+
+  .btn-primary:hover {
+    background: #67e8f9;
+    box-shadow: 0 0 24px rgba(34,211,238,0.35);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-bright);
+    padding: 9px 14px;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: var(--red-dim);
+  }
+
+  /* ─── EXAMPLES ─── */
+  .examples-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  .example-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 7px 8px;
+    text-align: center;
+    line-height: 1.3;
+    transition: all 0.15s;
+    border-radius: 0;
+  }
+
+  .example-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  /* ─── RIGHT COLUMN ─── */
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ─── RESULT CARD ─── */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 14px; height: 14px;
+    border-top: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+    color: inherit;
+  }
+
+  .result-card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 14px; height: 14px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    color: inherit;
+  }
+
+  .result-card.aceito    { border-color: var(--green);  box-shadow: 0 0 40px rgba(52,211,153,0.07);  color: var(--green); }
+  .result-card.conforme  { border-color: var(--yellow); box-shadow: 0 0 40px rgba(251,191,36,0.07);  color: var(--yellow); }
+  .result-card.risco     { border-color: var(--orange); box-shadow: 0 0 40px rgba(249,115,22,0.07);  color: var(--orange); }
+  .result-card.rejeitado { border-color: var(--red);    box-shadow: 0 0 40px rgba(244,63,94,0.07);   color: var(--red); }
+
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px 8px 14px;
+    margin-bottom: 14px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .result-badge-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36.5px;
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+
+  .result-badge.aceito    { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(52,211,153,0.22); }
+  .result-badge.conforme  { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(251,191,36,0.22); }
+  .result-badge.risco     { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(249,115,22,0.22); }
+  .result-badge.rejeitado { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(244,63,94,0.22); }
+
+  .result-explanation {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+
+  .result-explanation strong { color: var(--text); font-weight: 700; }
+
+  .result-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    gap: 5px;
+    margin-top: 12px;
+  }
+
+  .metric {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+  }
+
+  .metric-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ─── CHART CARD ─── */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+  }
+
+  .chart-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 13px; height: 13px;
+    border-top: 2px solid var(--accent2);
+    border-left: 2px solid var(--accent2);
+  }
+
+  .chart-card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 13px; height: 13px;
+    border-bottom: 2px solid var(--accent2);
+    border-right: 2px solid var(--accent2);
+  }
+
+  canvas#chart {
+    width: 100%;
+    display: block;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    flex-shrink: 0;
+  }
+
+  /* ─── CONCEPTS SECTION ─── */
+  .concepts-section {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 22px 20px;
+    position: relative;
+  }
+
+  .concepts-section::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 13px; height: 13px;
+    border-top: 2px solid var(--accent2);
+    border-left: 2px solid var(--accent2);
+  }
+
+  .concepts-section::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 13px; height: 13px;
+    border-bottom: 2px solid var(--accent2);
+    border-right: 2px solid var(--accent2);
+  }
+
+  .concepts-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .concepts-title::before {
+    content: '//';
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.35;
+    font-size: 14px;
+  }
+
+  .concepts-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 7px;
+  }
+
+  .concept-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid rgba(129,140,248,0.2);
+    padding: 12px 14px;
+    transition: border-left-color 0.2s, background 0.2s;
+  }
+
+  .concept-item:hover {
+    border-left-color: var(--accent2);
+    background: var(--surface3);
+  }
+
+  .concept-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 5px;
+  }
+
+  .concept-desc {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  /* ─── PLACEHOLDER ─── */
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .placeholder svg { opacity: 0.2; }
+
+  .placeholder p {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  .placeholder p strong { color: var(--text); }
+
+  /* ─── RISK ROW ─── */
+  .risk-row {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .risk-item {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+  }
+
+  .risk-item-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .risk-item-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  /* ─── K CONFIDENCE BADGE ─── */
+  .k-input-wrap {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  .k-input-wrap input { flex: 1; }
+
+  .k-conf-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid rgba(34,211,238,0.3);
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    min-width: 76px;
+  }
+
+  .k-conf-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
+  .k-conf-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .fade-in {
+    animation: fadeIn 0.35s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes highlight {
+    0%   { background: rgba(129,140,248,0.22); border-left-color: rgba(129,140,248,0.9); }
+    100% { background: rgba(129,140,248,0.08); border-left-color: rgba(129,140,248,0.35); }
+  }
+  .highlight-anim { animation: highlight 0.55s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <div class="logo-icon-wrap">
+      <svg viewBox="0 0 18 18">
+        <line x1="9" y1="1.5" x2="9" y2="16.5"/>
+        <line x1="1.5" y1="9" x2="16.5" y2="9"/>
+        <line x1="4" y1="4" x2="14" y2="14" stroke-opacity="0.5"/>
+        <line x1="14" y1="4" x2="4" y2="14" stroke-opacity="0.5"/>
+        <circle cx="9" cy="9" r="2.5"/>
+      </svg>
+    </div>
+    <div class="logo-text-wrap">
+      <div class="logo-title">CQV — Metrologia</div>
+      <div class="logo-sub">Controle de Qualidade por Variáveis</div>
+      <div class="logo-prof">Prof. Carlos Souza</div>
+    </div>
+  </div>
+  <div class="header-sep"></div>
+  <span class="header-tag">Didático</span>
+  <div class="header-right">
+    <span class="professor-tag">Prof. Carlos Souza</span>
+    <button class="btn-theme" id="btnTema" onclick="toggleTema()">☀ Claro</button>
+  </div>
+</header>
+
+<main>
+  <!-- ── LEFT: INPUTS ── -->
+  <aside>
+    <div class="card">
+      <div class="card-title">Parâmetros de Entrada</div>
+
+      <div class="section-label">Especificação</div>
+
+      <div class="field-group">
+        <label>Valor Nominal (VN)</label>
+        <div class="input-row">
+          <input id="vn" type="number" step="any" placeholder="ex: 50.000" oninput="atualizarLimites()">
+          <select id="unit" class="unit-select" onchange="atualizarLimites()">
+            <option value="mm">mm</option>
+            <option value="cm">cm</option>
+            <option value="m">m</option>
+            <option value="μm">μm</option>
+            <option value="g">g</option>
+            <option value="kg">kg</option>
+            <option value="°C">°C</option>
+            <option value="N">N</option>
+            <option value="kN">kN</option>
+            <option value="MPa">MPa</option>
+            <option value="">—</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Tolerância exigida (±T)</label>
+        <input id="tol" type="number" step="any" min="0" placeholder="ex: 0.050  →  VN ± T" oninput="atualizarLimites()">
+      </div>
+
+      <div class="computed-row" id="limiteDisplay">
+        <div class="computed-box">
+          <div class="computed-box-label">LIE = VN − T</div>
+          <div class="computed-box-value" id="lieMostrado">—</div>
+        </div>
+        <div class="computed-box">
+          <div class="computed-box-label">LSE = VN + T</div>
+          <div class="computed-box-value" id="lseMostrado">—</div>
+        </div>
+      </div>
+
+      <div class="section-label">Medição</div>
+
+      <div class="field-group">
+        <label>Valor Medido (VM)</label>
+        <input id="vm" type="number" step="any" placeholder="ex: 50.010">
+      </div>
+
+      <div class="field-group">
+        <label>Incerteza Padrão (u<sub style="font-size:14px">c</sub>)</label>
+        <input id="uc" type="number" step="any" min="0" placeholder="ex: 0.010" oninput="atualizarU()">
+      </div>
+
+      <div class="field-group">
+        <label>Fator de Abrangência (k)</label>
+        <div class="k-input-wrap">
+          <input id="k" type="number" step="any" min="1" value="2" placeholder="padrão: 2" oninput="atualizarU()">
+          <div class="k-conf-badge">
+            <div class="k-conf-label">Confiança</div>
+            <div class="k-conf-value" id="kConf">~95,45%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="computed-u-row" id="uDisplay">
+        <div>
+          <div class="computed-box-label">Incerteza Expandida  U = k × u<sub style="font-size:13px">c</sub></div>
+        </div>
+        <div class="computed-box-value" id="uMostrado">—</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="calcular()">▶ Calcular decisão</button>
+        <button class="btn-ghost" onclick="limpar()" title="Limpar">✕</button>
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="examples-label">Exemplos pré-carregados</div>
+      <div class="examples-grid">
+        <button class="example-btn" onclick="carregarExemplo(0)">✅ Peça Aceita</button>
+        <button class="example-btn" onclick="carregarExemplo(1)">⚠ Zona de Risco</button>
+        <button class="example-btn" onclick="carregarExemplo(2)">🔶 Conforme s/ Aceitar</button>
+        <button class="example-btn" onclick="carregarExemplo(3)">❌ Peça Rejeitada</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── RIGHT: OUTPUTS ── -->
+  <div class="right-col">
+
+    <div class="result-card" id="resultCard">
+      <div id="resultContent">
+        <div class="placeholder">
+          <svg width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <rect x="8" y="20" width="32" height="8" rx="1"/>
+            <circle cx="24" cy="24" r="3.5" stroke-width="2"/>
+            <line x1="24" y1="8" x2="24" y2="17"/>
+            <line x1="24" y1="31" x2="24" y2="40"/>
+            <line x1="10" y1="12" x2="14" y2="16"/>
+            <line x1="38" y1="12" x2="34" y2="16"/>
+          </svg>
+          <p>Preencha os campos e clique em <strong>Calcular decisão</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="card-title">Visualização Gráfica</div>
+      <canvas id="chart" height="200"></canvas>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(244,63,94,0.32);outline:1.5px solid #f43f5e;"></span>Zona de rejeição</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(251,191,36,0.32);outline:1.5px solid #fbbf24;"></span>Risco / conformidade</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(52,211,153,0.32);outline:1.5px solid #34d399;"></span>Zona de aceitação</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#22d3ee;border-radius:50%;"></span>VM ± U</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONCEPTS ── -->
+  <div class="concepts-section">
+    <div class="concepts-title">Conceitos Fundamentais de Metrologia</div>
+    <div class="concepts-grid">
+      <div class="concept-item">
+        <div class="concept-name">Tolerância Dimensional</div>
+        <div class="concept-desc">Variação máxima permitida de uma característica em relação ao valor nominal, definida em projeto. É a diferença entre LSE e LIE (= 2T para tolerância simétrica).</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Limite Inferior de Especificação (LIE)</div>
+        <div class="concept-desc">Menor valor aceitável pelo projeto para uma característica dimensional. Calculado como VN − T. Valores abaixo deste limite são não conformes.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Limite Superior de Especificação (LSE)</div>
+        <div class="concept-desc">Maior valor aceitável pelo projeto para uma característica dimensional. Calculado como VN + T. Valores acima deste limite são não conformes.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Valor Nominal (VN)</div>
+        <div class="concept-desc">Valor de referência ideal especificado em projeto, em torno do qual a tolerância é definida. Ex: diâmetro de 50,000 mm.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">±U Incerteza de Medição</div>
+        <div class="concept-desc">A incerteza padrão (u_c) representa a dispersão dos valores medidos. A incerteza expandida U = k × u_c define o intervalo de confiança do resultado, conforme o Guia GUM.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Fator de Abrangência (k)</div>
+        <div class="concept-desc">Multiplicador que define o nível de confiança da incerteza expandida. k = 2 corresponde a ~95% de confiança (distribuição normal); k = 3 corresponde a ~99,7%.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Zona de Conformidade</div>
+        <div class="concept-desc">Faixa entre LIE e LSE na qual o produto atende ao requisito de projeto. Peças com valor medido dentro desta faixa são conformes.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Zona de Aceitação</div>
+        <div class="concept-desc">Faixa reduzida pela incerteza: de (LIE + U) até (LSE − U). Produtos com VM nesta faixa têm o intervalo de incerteza completamente dentro da especificação.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Risco de Falsa Aceitação</div>
+        <div class="concept-desc">Probabilidade de aceitar um produto não conforme. Ocorre quando VM está dentro da especificação, mas a incerteza permite que o valor real esteja fora. Zona de risco próxima a LIE ou LSE.</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-name">Risco de Falsa Rejeição</div>
+        <div class="concept-desc">Probabilidade de rejeitar um produto conforme. A incerteza pode levar à reprovação de uma peça cujo valor real estaria dentro da especificação.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+let lastCalcData = null;
+
+function toggleTema() {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  document.getElementById('btnTema').textContent = isLight ? '🌙 Escuro' : '☀ Claro';
+  if (lastCalcData) desenharGrafico(lastCalcData);
+  else desenharGraficoVazio();
+}
+
+function getCanvasColors() {
+  const isLight = document.body.classList.contains('light-mode');
+  return {
+    bg:        isLight ? '#e0e7f4' : '#090c13',
+    grid:      isLight ? 'rgba(170,182,206,0.35)' : 'rgba(22,29,46,0.8)',
+    textDim:   isLight ? '#7e90aa' : '#1e2638',
+    textMuted: isLight ? '#3d5070' : '#6070a0',
+    border:    isLight ? '#aab6ce' : '#161d2e',
+    vmBorder:  isLight ? '#e0e7f4' : '#090c13',
+    isLight,
+  };
+}
+
+const exemplos = [
+  { vn:50.000, tol:0.050, vm:50.010, uc:0.0075, k:2, unit:'mm' },
+  { vn:50.000, tol:0.050, vm:50.038, uc:0.010,  k:2, unit:'mm' },
+  { vn:50.000, tol:0.050, vm:50.040, uc:0.010,  k:2, unit:'mm' },
+  { vn:50.000, tol:0.050, vm:50.060, uc:0.005,  k:2, unit:'mm' },
+];
+
+function carregarExemplo(i) {
+  const e = exemplos[i];
+  document.getElementById('vn').value   = e.vn;
+  document.getElementById('tol').value  = e.tol;
+  document.getElementById('vm').value   = e.vm;
+  document.getElementById('uc').value   = e.uc;
+  document.getElementById('k').value    = e.k;
+  document.getElementById('unit').value = e.unit;
+  atualizarLimites();
+  atualizarU();
+  calcular();
+}
+
+function atualizarLimites() {
+  const vn   = parseFloat(document.getElementById('vn').value);
+  const tol  = parseFloat(document.getElementById('tol').value);
+  const unit = document.getElementById('unit').value;
+  const lieEl = document.getElementById('lieMostrado');
+  const lseEl = document.getElementById('lseMostrado');
+  if (!isNaN(vn) && !isNaN(tol) && tol >= 0) {
+    lieEl.textContent = fmt(vn - tol, unit);
+    lseEl.textContent = fmt(vn + tol, unit);
+    pulsar('limiteDisplay');
+  } else {
+    lieEl.textContent = '—';
+    lseEl.textContent = '—';
+  }
+}
+
+function erfc(x) {
+  const t = 1 / (1 + 0.3275911 * x);
+  const p = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))));
+  return p * Math.exp(-x * x);
+}
+
+function confiancaDeK(k) {
+  if (k <= 0) return 0;
+  return (1 - erfc(k / Math.SQRT2)) * 100;
+}
+
+function atualizarKConf() {
+  const k  = parseFloat(document.getElementById('k').value);
+  const el = document.getElementById('kConf');
+  if (!isNaN(k) && k > 0) {
+    el.textContent = '~' + confiancaDeK(k).toFixed(2).replace('.', ',') + '%';
+  } else {
+    el.textContent = '—';
+  }
+}
+
+function atualizarU() {
+  const uc   = parseFloat(document.getElementById('uc').value);
+  const k    = parseFloat(document.getElementById('k').value) || 2;
+  const unit = document.getElementById('unit').value;
+  const uEl  = document.getElementById('uMostrado');
+  atualizarKConf();
+  if (!isNaN(uc) && uc >= 0) {
+    uEl.textContent = '± ' + fmt(k * uc, unit);
+    pulsar('uDisplay');
+  } else {
+    uEl.textContent = '—';
+  }
+}
+
+function pulsar(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('highlight-anim');
+  void el.offsetWidth;
+  el.classList.add('highlight-anim');
+}
+
+function limpar() {
+  ['vn','tol','vm','uc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('k').value    = '2';
+  document.getElementById('unit').value = 'mm';
+  document.getElementById('lieMostrado').textContent = '—';
+  document.getElementById('lseMostrado').textContent = '—';
+  document.getElementById('uMostrado').textContent   = '—';
+  lastCalcData = null;
+  document.getElementById('resultCard').className = 'result-card';
+  document.getElementById('resultContent').innerHTML = `
+    <div class="placeholder">
+      <svg width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <rect x="8" y="20" width="32" height="8" rx="1"/>
+        <circle cx="24" cy="24" r="3.5" stroke-width="2"/>
+        <line x1="24" y1="8" x2="24" y2="17"/>
+        <line x1="24" y1="31" x2="24" y2="40"/>
+        <line x1="10" y1="12" x2="14" y2="16"/>
+        <line x1="38" y1="12" x2="34" y2="16"/>
+      </svg>
+      <p>Preencha os campos e clique em <strong>Calcular decisão</strong></p>
+    </div>`;
+  desenharGraficoVazio();
+}
+
+function calcular() {
+  const vn   = parseFloat(document.getElementById('vn').value);
+  const tol  = parseFloat(document.getElementById('tol').value);
+  const vm   = parseFloat(document.getElementById('vm').value);
+  const uc   = parseFloat(document.getElementById('uc').value);
+  const k    = parseFloat(document.getElementById('k').value) || 2;
+  const unit = document.getElementById('unit').value;
+
+  const lie = vn - tol;
+  const lse = vn + tol;
+  const u   = k * uc;
+
+  if ([tol, vm, uc].some(isNaN) || isNaN(vn)) {
+    alert('Por favor, preencha: Valor Nominal, Tolerância, Valor Medido e Incerteza Padrão.');
+    return;
+  }
+  if (tol <= 0) { alert('A tolerância T deve ser maior que zero.'); return; }
+  if (uc < 0)   { alert('A incerteza padrão u_c deve ser positiva.'); return; }
+
+  const lia  = lie + u;
+  const lsa  = lse - u;
+  const vmMin = vm - u;
+  const vmMax = vm + u;
+
+  const conformeMin = vm >= lie;
+  const conformeMax = vm <= lse;
+  const conforme = conformeMin && conformeMax;
+  const aceito   = conforme && vm >= lia && vm <= lsa && lia < lsa;
+  const riscoBaixo = (vm >= lie && vm < lia) || (vm > lsa && vm <= lse);
+  const riscoU = (vmMin < lie && vm >= lie) || (vmMax > lse && vm <= lse);
+
+  let decisao, classe, emoji, explicacao;
+
+  if (!conforme) {
+    decisao = 'REJEITADO';
+    classe  = 'rejeitado';
+    emoji   = '❌';
+    if (!conformeMin) {
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está abaixo do limite inferior de especificação
+        (<strong>LIE = ${fmt(lie, unit)}</strong>). A peça está <strong>fora da tolerância de projeto</strong>
+        e deve ser rejeitada. Desvio: ${fmt(Math.abs(vm - lie), unit)} abaixo do LIE.`;
+    } else {
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está acima do limite superior de especificação
+        (<strong>LSE = ${fmt(lse, unit)}</strong>). A peça está <strong>fora da tolerância de projeto</strong>
+        e deve ser rejeitada. Desvio: ${fmt(Math.abs(vm - lse), unit)} acima do LSE.`;
+    }
+  } else if (aceito) {
+    decisao = 'ACEITO';
+    classe  = 'aceito';
+    emoji   = '✅';
+    explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está dentro da <strong>zona de aceitação</strong>
+      [${fmt(lia, unit)} ; ${fmt(lsa, unit)}]. O intervalo de incerteza
+      [${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}] está <em>completamente</em> dentro dos limites de especificação.
+      A peça está <strong>aprovada com segurança metrológica</strong>.`;
+  } else if (lia > lsa) {
+    decisao = 'ZONA DE RISCO';
+    classe  = 'risco';
+    emoji   = '⚠️';
+    explicacao = `A incerteza expandida U = <strong>${fmt(u, unit)}</strong> é maior que a metade da tolerância,
+      tornando a zona de aceitação inexistente (LIA &gt; LSA). O instrumento de medição
+      <strong>não possui resolução adequada</strong> para avaliar esta característica com segurança.
+      Recomenda-se um instrumento com menor incerteza.`;
+  } else {
+    const tocaMin = vmMin < lie;
+    const tocaMax = vmMax > lse;
+    if (riscoBaixo || riscoU) {
+      decisao = 'ZONA DE RISCO';
+      classe  = 'risco';
+      emoji   = '⚠️';
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está dentro da tolerância do projeto,
+        porém o intervalo de incerteza [${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}]
+        ${tocaMin ? 'ultrapassa o <strong>LIE</strong>' : ''}${tocaMin && tocaMax ? ' e ' : ''}${tocaMax ? 'ultrapassa o <strong>LSE</strong>' : ''}.
+        Existe <strong>risco de falsa aceitação</strong>: o valor real da peça pode estar fora da especificação.
+        A decisão de aceitar ou rejeitar é <strong>metrológicamente incerta</strong>.`;
+    } else {
+      decisao = 'CONFORME, MAS NÃO ACEITO';
+      classe  = 'conforme';
+      emoji   = '🔶';
+      explicacao = `O valor medido <strong>${fmt(vm, unit)}</strong> está dentro da tolerância do projeto
+        [${fmt(lie, unit)} ; ${fmt(lse, unit)}], mas fora da zona de aceitação
+        [${fmt(lia, unit)} ; ${fmt(lsa, unit)}]. O intervalo de incerteza
+        [${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}] toca ou ultrapassa uma das bordas da especificação.
+        A peça é <strong>conforme ao projeto</strong>, mas a incerteza de medição
+        <strong>não permite confirmar a aceitação com segurança</strong>.`;
+    }
+  }
+
+  const card = document.getElementById('resultCard');
+  card.className = `result-card ${classe} fade-in`;
+
+  const totalTol = lse - lie;
+  const razaoU = ((u / (totalTol / 2)) * 100).toFixed(1);
+
+  document.getElementById('resultContent').innerHTML = `
+    <div class="fade-in">
+      <div class="result-badge ${classe}">
+        <span style="font-size:25px;line-height:1">${emoji}</span>
+        <span class="result-badge-label">${decisao}</span>
+      </div>
+      <p class="result-explanation">${explicacao}</p>
+      <div class="result-metrics">
+        <div class="metric">
+          <div class="metric-label">VN</div>
+          <div class="metric-value">${fmt(vn, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Tolerância ±T</div>
+          <div class="metric-value">± ${fmt(tol, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Incert. padrão u_c</div>
+          <div class="metric-value">${fmt(uc, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Fator k</div>
+          <div class="metric-value">${k}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">U = k·u_c</div>
+          <div class="metric-value">± ${fmt(u, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">U / T</div>
+          <div class="metric-value">${razaoU}%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">L. Aceit. Inf. (LIA)</div>
+          <div class="metric-value">${fmt(lia, unit)}</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">L. Aceit. Sup. (LSA)</div>
+          <div class="metric-value">${fmt(lsa, unit)}</div>
+        </div>
+      </div>
+      <div class="risk-row">
+        <div class="risk-item">
+          <div class="risk-item-label">Intervalo de incerteza</div>
+          <div class="risk-item-val" style="color:var(--accent)">[${fmt(vmMin, unit)} ; ${fmt(vmMax, unit)}]</div>
+        </div>
+        <div class="risk-item">
+          <div class="risk-item-label">VM dentro da especificação?</div>
+          <div class="risk-item-val" style="color:${conforme ? 'var(--green)' : 'var(--red)'}">${conforme ? '✔ Sim' : '✘ Não'}</div>
+        </div>
+      </div>
+    </div>`;
+
+  lastCalcData = { lie, lse, lia, lsa, vm, u, unit, vn, classe };
+  desenharGrafico(lastCalcData);
+}
+
+function fmt(val, unit) {
+  if (isNaN(val)) return '—';
+  const abs = Math.abs(val);
+  const decimals = abs < 10 ? 4 : abs < 100 ? 3 : 2;
+  return val.toFixed(decimals) + (unit ? ' ' + unit : '');
+}
+
+// ── CANVAS ──
+function desenharGraficoVazio() {
+  const canvas = document.getElementById('chart');
+  if (!canvas.offsetWidth) { requestAnimationFrame(desenharGraficoVazio); return; }
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = canvas.offsetWidth * dpr;
+  canvas.height = 200 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = 200;
+  const c = getCanvasColors();
+
+  ctx.fillStyle = c.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = c.grid;
+  ctx.lineWidth = 0.5;
+  const step = 44;
+  for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  ctx.fillStyle = c.textMuted;
+  ctx.font = '500 17px Rajdhani, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('O gráfico aparecerá após o cálculo', W / 2, H / 2);
+}
+
+function fillZone(ctx, x, y, w, h, fillColor, stripeColor) {
+  if (w <= 0) return;
+  ctx.fillStyle = fillColor;
+  ctx.fillRect(x, y, w, h);
+  // Colored stripe at top of each zone for clarity
+  ctx.fillStyle = stripeColor;
+  ctx.fillRect(x, y, w, 4);
+}
+
+function zoneLabel(ctx, label, cx, y, h, color) {
+  const textW = ctx.measureText(label).width;
+  // Only draw if there's enough room
+  if (textW + 6 > Math.abs(cx * 2)) return;
+  ctx.fillStyle = color;
+  ctx.font = 'bold 10.5px "JetBrains Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, cx, y + h / 2 + 3);
+}
+
+function desenharGrafico(data) {
+  const { lie, lse, lia, lsa, vm, u, unit, vn, classe } = data;
+  const canvas = document.getElementById('chart');
+  if (!canvas.offsetWidth) { requestAnimationFrame(() => desenharGrafico(data)); return; }
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = canvas.offsetWidth * dpr;
+  canvas.height = 220 * dpr;
+  ctx.scale(dpr, dpr);
+  const W = canvas.offsetWidth, H = 220;
+
+  const mx = 20, my = 36, bw = W - mx * 2, bh = 58, by = my + 30;
+
+  const padding = Math.max((lse - lie) * 0.5, u * 3, 0.01);
+  const rMin = Math.min(lie, vm - u) - padding;
+  const rMax = Math.max(lse, vm + u) + padding;
+  const range = rMax - rMin;
+  const toX = v => mx + ((v - rMin) / range) * bw;
+
+  const c = getCanvasColors();
+
+  ctx.fillStyle = c.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = c.grid;
+  ctx.lineWidth = 0.5;
+  const step = 44;
+  for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  const lieX = toX(lie);
+  const lseX = toX(lse);
+  const liaX = toX(Math.max(lia, lie));
+  const lsaX = toX(Math.min(lsa, lse));
+
+  const alpha = c.isLight ? 0.28 : 0.32;
+
+  // ── Reject zones (red) ──
+  const redFill   = `rgba(244,63,94,${alpha})`;
+  const redStripe = '#f43f5e';
+  fillZone(ctx, mx,    by, lieX - mx,          bh, redFill,   redStripe);
+  fillZone(ctx, lseX,  by, mx + bw - lseX,     bh, redFill,   redStripe);
+
+  // ── Risk zones (amber) ──
+  const ambFill   = `rgba(251,191,36,${alpha})`;
+  const ambStripe = '#fbbf24';
+  if (liaX > lieX) fillZone(ctx, lieX, by, liaX - lieX, bh, ambFill, ambStripe);
+  if (lsaX < lseX) fillZone(ctx, lsaX, by, lseX - lsaX, bh, ambFill, ambStripe);
+
+  // ── Acceptance zone (green) ──
+  const grnFill   = `rgba(52,211,153,${alpha})`;
+  const grnStripe = '#34d399';
+  if (lsaX > liaX) fillZone(ctx, liaX, by, lsaX - liaX, bh, grnFill, grnStripe);
+
+  // Zone labels inside bar
+  ctx.save();
+  ctx.globalAlpha = 0.85;
+  if (lieX - mx > 32)   zoneLabel(ctx, 'REJEIÇÃO', mx + (lieX - mx)/2,        by, bh, redStripe);
+  if (liaX - lieX > 32) zoneLabel(ctx, 'RISCO',    lieX + (liaX - lieX)/2,    by, bh, ambStripe);
+  if (lsaX - liaX > 32) zoneLabel(ctx, 'ACEITAÇÃO', liaX + (lsaX - liaX)/2,  by, bh, grnStripe);
+  if (lseX - lsaX > 32) zoneLabel(ctx, 'RISCO',    lsaX + (lseX - lsaX)/2,   by, bh, ambStripe);
+  if (mx + bw - lseX > 32) zoneLabel(ctx, 'REJEIÇÃO', lseX + (mx + bw - lseX)/2, by, bh, redStripe);
+  ctx.restore();
+
+  // Bar border
+  ctx.strokeStyle = c.border;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(mx, by, bw, bh);
+
+  const drawVLine = (x, color, dash, label, labelY, side = 'center') => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash(dash);
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = color;
+    ctx.beginPath();
+    ctx.moveTo(x, by - 4);
+    ctx.lineTo(x, by + bh + 4);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+    ctx.font = 'bold 13px "JetBrains Mono", monospace';
+    ctx.fillStyle = color;
+    ctx.textAlign = side === 'left' ? 'left' : side === 'right' ? 'right' : 'center';
+    const lx = side === 'left' ? x + 3 : side === 'right' ? x - 3 : x;
+    ctx.fillText(label, lx, labelY);
+  };
+
+  drawVLine(lieX, '#f43f5e', [],     'LIE', by - 8,        'right');
+  drawVLine(lseX, '#f43f5e', [],     'LSE', by - 8,        'left');
+
+  if (lsa > lia) {
+    drawVLine(liaX, '#34d399', [4,3], 'LIA', by + bh + 14, 'right');
+    drawVLine(lsaX, '#34d399', [4,3], 'LSA', by + bh + 14, 'left');
+  }
+
+  if (!isNaN(vn)) {
+    const vnX = toX(vn);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(129,140,248,0.6)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 4]);
+    ctx.beginPath(); ctx.moveTo(vnX, by); ctx.lineTo(vnX, by + bh); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.font = '11px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#818cf8';
+    ctx.textAlign = 'center';
+    ctx.fillText('VN', vnX, by + bh + 26);
+  }
+
+  // Uncertainty band — vivid
+  const vmX    = toX(vm);
+  const vmMinX = toX(vm - u);
+  const vmMaxX = toX(vm + u);
+
+  ctx.save();
+  const bandY = by + bh * 0.1, bandH = bh * 0.8;
+  const bx2 = vmMinX, bw2 = vmMaxX - vmMinX;
+  ctx.fillStyle = 'rgba(34,211,238,0.20)';
+  ctx.fillRect(bx2, bandY, bw2, bandH);
+  ctx.strokeStyle = 'rgba(34,211,238,0.75)';
+  ctx.lineWidth = 1.5;
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = 'rgba(34,211,238,0.5)';
+  ctx.strokeRect(bx2, bandY, bw2, bandH);
+  ctx.restore();
+
+  // VM point with glow
+  const colorMap = { aceito:'#34d399', conforme:'#fbbf24', risco:'#f97316', rejeitado:'#f43f5e' };
+  const vmColor = colorMap[classe] || '#22d3ee';
+  const vmCy = by + bh / 2;
+
+  ctx.save();
+  ctx.shadowBlur = 18;
+  ctx.shadowColor = vmColor;
+  ctx.beginPath();
+  ctx.arc(vmX, vmCy, 7.5, 0, Math.PI * 2);
+  ctx.fillStyle = vmColor;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = c.bg;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.font = 'bold 13px "JetBrains Mono", monospace';
+  ctx.fillStyle = vmColor;
+  ctx.textAlign = 'center';
+  ctx.shadowBlur = 6; ctx.shadowColor = vmColor;
+  ctx.fillText('VM', vmX, by - 8);
+  ctx.shadowBlur = 0;
+
+  // X axis ticks
+  const tickVals = [lie, lse, vm, vm - u, vm + u];
+  if (!isNaN(vn)) tickVals.push(vn);
+  const uniqueTicks = [...new Set(tickVals.map(v => v.toFixed(6)))].map(Number);
+  ctx.font = '12px "JetBrains Mono", monospace';
+  ctx.fillStyle = c.textMuted;
+  uniqueTicks.forEach(v => {
+    const tx = toX(v);
+    ctx.textAlign = 'center';
+    const decimals = range < 0.5 ? 4 : range < 5 ? 3 : 2;
+    ctx.fillText(v.toFixed(decimals), tx, by + bh + 38);
+  });
+
+  ctx.font = '14px Rajdhani, sans-serif';
+  ctx.fillStyle = c.textMuted;
+  ctx.textAlign = 'right';
+  ctx.fillText(unit, mx + bw, by + bh + 38);
+
+  ctx.font = 'bold 13px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#22d3ee';
+  ctx.textAlign = 'left';
+  ctx.shadowBlur = 4; ctx.shadowColor = 'rgba(34,211,238,0.4)';
+  ctx.fillText('ESCALA DE MEDIÇÃO', mx, my - 2);
+  ctx.shadowBlur = 0;
+}
+
+function redesenhar() {
+  if (lastCalcData) desenharGrafico(lastCalcData);
+  else desenharGraficoVazio();
+}
+
+window.addEventListener('load', () => { desenharGraficoVazio(); atualizarKConf(); });
+window.addEventListener('resize', redesenhar);
+</script>
+</body>
+</html>
